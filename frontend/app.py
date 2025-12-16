@@ -63,12 +63,6 @@ if st.button("Recommend"):
             ).encode("utf-8")
 
         st.success("Recommendations generated!")
-
-        # 🔹 Show TABLE (SHL requirement)
-        st.subheader("Recommended Assessments (Tabular Format)")
-        st.dataframe(df, use_container_width=True)
-
-        st.subheader("Why these assessments?")
         st.write(explanation)
 
 
