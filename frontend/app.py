@@ -34,12 +34,15 @@ if st.button("Recommend"):
             # 🔹 Convert results to TABULAR format (CRITICAL)
             rows = []
             for r in results:
-                rows.append({
-                    "Query": query,
-                    "Assessment_url": r.get("assessment_url") or r.get("url")
-                })
-
-            df = pd.DataFrame(rows)
+                rows.append([
+                    query,
+                    r["assessment_url"]
+                ])
+            
+            df = pd.DataFrame(
+                rows,
+                columns=["Query", "Assessment_url"]
+            )
 
             # 🔹 Save CSV in memory
             st.session_state.csv_data = df.to_csv(
