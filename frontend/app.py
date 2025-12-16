@@ -47,10 +47,13 @@ if st.button("Recommend"):
         st.write(explanation)
 
 # ✅ Download button only appears when CSV exists
+st.session_state.csv_data = csv_text.encode("utf-8") if csv_text else None
+
 if st.session_state.csv_data:
     st.download_button(
-        label="Download Submission CSV",
-        data=st.session_state.csv_data,
+        "Download Submission CSV",
+        st.session_state.csv_data,
         file_name="shl_submission.csv",
         mime="text/csv"
     )
+
