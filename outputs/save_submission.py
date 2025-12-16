@@ -1,17 +1,14 @@
 import csv
 import os
-
+import io
 SUBMISSION_FILE = "outputs/submission.csv"
 
-def save_submission(query, recommendations):
-    file_exists = os.path.exists(SUBMISSION_FILE)
+csv_data = save_submission(query, results)
 
-    with open(SUBMISSION_FILE, "a", newline="", encoding="utf-8") as f:
-        writer = csv.writer(f)
+st.download_button(
+    label="Download Submission CSV",
+    data=csv_data,
+    file_name="shl_submission.csv",
+    mime="text/csv"
+)
 
-        # header only once
-        if not file_exists:
-            writer.writerow(["Query", "Assessment_url"])
-
-        for rec in recommendations:
-            writer.writerow([query, rec["assessment_url"]])
