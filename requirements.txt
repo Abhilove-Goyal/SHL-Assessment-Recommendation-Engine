@@ -1,0 +1,13 @@
+pandas
+numpy
+scikit-learn
+sentence-transformers
+faiss-cpu
+beautifulsoup4
+requests
+fastapi
+uvicorn
+streamlit
+python-dotenv
+openpyxl
+google-generativeai
