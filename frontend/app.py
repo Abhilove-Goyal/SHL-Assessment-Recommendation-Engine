@@ -34,14 +34,24 @@ if st.button("Recommend"):
             # 🔹 Convert results to TABULAR format (CRITICAL)
             rows = []
             for r in results:
-                rows.append([
-                    query,
-                    r["assessment_url"]
-                ])
+                rows.append({
+                    "Query": query,
+                    "Assessment_url": r["assessment_url"]
+                })
             
-            df = pd.DataFrame(
-                rows,
-                columns=["Query", "Assessment_url"]
+            df = pd.DataFrame(rows)
+            
+            st.subheader("Recommended Assessments (Tabular Format)")
+            
+            st.dataframe(
+                df,
+                use_container_width=True,
+                column_config={
+                    "Assessment_url": st.column_config.LinkColumn(
+                        "Assessment URL",
+                        display_text="Open assessment"
+                    )
+                }
             )
 
             # 🔹 Save CSV in memory
