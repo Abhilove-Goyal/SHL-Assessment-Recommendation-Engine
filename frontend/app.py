@@ -43,3 +43,11 @@ if st.button("Recommend"):
 
         st.subheader("Why these assessments?")
         st.write(explanation)
+csv_data = save_submission(query, results)
+
+st.download_button(
+    label="Download Submission CSV",
+    data=csv_data,
+    file_name="shl_submission.csv",
+    mime="text/csv"
+)
