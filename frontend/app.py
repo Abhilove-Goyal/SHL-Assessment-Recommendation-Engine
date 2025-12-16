@@ -36,20 +36,22 @@ if st.button("Recommend"):
             for r in results:
                 rows.append({
                     "Query": query,
-                    "Assessment_url": r["assessment_url"]
+                    "Assessment_url": r["assessment_url"],   # raw URL (CSV-safe)
+                    "Open": r["assessment_url"]               # used only for clicking
                 })
             
             df = pd.DataFrame(rows)
             
-            st.subheader("Recommended Assessments (Tabular Format)")
+            st.subheader("Recommended Assessments")
             
             st.dataframe(
                 df,
                 use_container_width=True,
+                hide_index=True,
                 column_config={
-                    "Assessment_url": st.column_config.LinkColumn(
-                        "Assessment URL",
-                        display_text="Open assessment"
+                    "Open": st.column_config.LinkColumn(
+                        "Open",
+                        display_text="🔗 Open"
                     )
                 }
             )
