@@ -3,7 +3,7 @@ import os
 import io
 import io
 SUBMISSION_FILE = "outputs/submission.csv"
-csv_data = save_submission(query, results)
+# csv_data = save_submission(query, results)
 def save_submission(query, results):
     """
     Returns CSV content as string in SHL-required format
