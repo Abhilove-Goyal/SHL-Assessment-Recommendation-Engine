@@ -1,8 +1,12 @@
+import sys
+import os
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 import faiss
 import pandas as pd
 import numpy as np
 from sentence_transformers import SentenceTransformer
-
+from outputs.save_submission import save_submission
+from recommender.rerank import rerank
 from recommender.query_enrichment import enrich_query
 from recommender.rerank import rerank
 
@@ -35,3 +39,17 @@ def retrieve(query, top_k=10):
 
     # 6. Return top_k
     return results[:top_k]
+
+
+def recommend(query, top_k=10, save_csv=True):
+    # Step 1: retrieve
+    results = retrieve(query, top_k=top_k)
+
+    # Step 2: rerank
+    results = rerank(results, query)
+
+    # Step 3: save predictions (CRITICAL)
+    if save_csv:
+        save_submission(query, results)
+
+    return results

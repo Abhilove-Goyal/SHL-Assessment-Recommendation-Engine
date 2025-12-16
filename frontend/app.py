@@ -1,31 +1,45 @@
+import sys
 import os
-import requests
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 import streamlit as st
-from dotenv import load_dotenv
+from recommender.retrieval import retrieve
+from recommender.rerank import rerank
+from recommender.rag_explainer import explain_recommendations
+from outputs.save_submission import save_submission
 
-load_dotenv()
+st.set_page_config(page_title="SHL Assessment Recommendation Engine", layout="wide")
 
-API_BASE_URL = os.getenv("API_BASE_URL", "http://localhost:8000")
+st.title("SHL GenAI Assessment Recommendation Engine")
 
-st.title("Assessment Recommendation Engine")
+query = st.text_area(
+    "Paste Job Description",
+    height=200,
+    placeholder="e.g. Hiring entry level Java developer with problem solving skills"
+)
 
-query = st.text_area("Paste Job Description")
+top_k = st.slider("Number of recommendations", 3, 10, 5)
 
 if st.button("Recommend"):
-    response = requests.post(
-        f"{API_BASE_URL}/recommend",
-        json={"query": query},
-        timeout=30
-    )
+    if not query.strip():
+        st.warning("Please enter a job description.")
+    else:
+        with st.spinner("Generating recommendations..."):
+            # 🔹 Core pipeline
+            results = retrieve(query, top_k=top_k)
+            results = rerank(results, query)
 
-    if response.status_code == 200:
-        data = response.json()
+            # 🔹 Save CSV in SHL-required format
+            save_submission(query, results)
+
+            # 🔹 GenAI explanation
+            explanation = explain_recommendations(query, results)
+
+        st.success("Recommendations generated!")
+
         st.subheader("Recommended Assessments")
-        for i, r in enumerate(data["recommendations"], 1):
+        for i, r in enumerate(results, 1):
             st.markdown(f"**{i}. {r.get('name', 'Assessment')}**")
             st.write(r.get("assessment_url", ""))
 
         st.subheader("Why these assessments?")
-        st.write(data["explanation"])
-    else:
-        st.error("API error. Please try again.")
+        st.write(explanation)
