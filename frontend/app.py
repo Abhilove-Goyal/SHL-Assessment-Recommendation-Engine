@@ -7,15 +7,16 @@ from recommender.rerank import rerank
 from recommender.rag_explainer import explain_recommendations
 from outputs.save_submission import save_submission
 
-
-st.set_page_config(page_title="SHL Assessment Recommendation Engine", layout="wide")
+st.set_page_config(
+    page_title="SHL Assessment Recommendation Engine",
+    layout="wide"
+)
 
 st.title("SHL GenAI Assessment Recommendation Engine")
 
 query = st.text_area(
     "Paste Job Description",
-    height=200,
-    placeholder="e.g. Hiring entry level Java developer with problem solving skills"
+    height=200
 )
 
 top_k = st.slider("Number of recommendations", 3, 10, 5)
@@ -25,15 +26,12 @@ if st.button("Recommend"):
         st.warning("Please enter a job description.")
     else:
         with st.spinner("Generating recommendations..."):
-            # 🔹 Core pipeline
             results = retrieve(query, top_k=top_k)
             results = rerank(results, query)
-
-            # 🔹 Save CSV in SHL-required format
-            save_submission(query, results)
-
-            # 🔹 GenAI explanation
             explanation = explain_recommendations(query, results)
+
+            # ✅ CSV is created ONLY after results exist
+            csv_data = save_submission(query, results)
 
         st.success("Recommendations generated!")
 
@@ -44,11 +42,10 @@ if st.button("Recommend"):
 
         st.subheader("Why these assessments?")
         st.write(explanation)
-csv_data = save_submission(query, results)
 
-st.download_button(
-    label="Download Submission CSV",
-    data=csv_data,
-    file_name="shl_submission.csv",
-    mime="text/csv"
-)
+        st.download_button(
+            label="Download Submission CSV",
+            data=csv_data,
+            file_name="shl_submission.csv",
+            mime="text/csv"
+        )
