@@ -7,6 +7,7 @@ from recommender.rerank import rerank
 from recommender.rag_explainer import explain_recommendations
 from outputs.save_submission import save_submission
 
+
 st.set_page_config(page_title="SHL Assessment Recommendation Engine", layout="wide")
 
 st.title("SHL GenAI Assessment Recommendation Engine")
