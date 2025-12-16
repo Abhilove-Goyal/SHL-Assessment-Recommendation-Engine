@@ -14,12 +14,12 @@ st.set_page_config(
 
 st.title("SHL GenAI Assessment Recommendation Engine")
 
-query = st.text_area(
-    "Paste Job Description",
-    height=200
-)
-
+query = st.text_area("Paste Job Description", height=200)
 top_k = st.slider("Number of recommendations", 3, 10, 5)
+
+# Initialize session state
+if "csv_data" not in st.session_state:
+    st.session_state.csv_data = None
 
 if st.button("Recommend"):
     if not query.strip():
@@ -30,8 +30,11 @@ if st.button("Recommend"):
             results = rerank(results, query)
             explanation = explain_recommendations(query, results)
 
-            # ✅ CSV is created ONLY after results exist
-            csv_data = save_submission(query, results)
+            # Generate CSV (string)
+            csv_text = save_submission(query, results)
+
+            # Convert to bytes (IMPORTANT)
+            st.session_state.csv_data = csv_text.encode("utf-8")
 
         st.success("Recommendations generated!")
 
@@ -43,9 +46,11 @@ if st.button("Recommend"):
         st.subheader("Why these assessments?")
         st.write(explanation)
 
-        st.download_button(
-            label="Download Submission CSV",
-            data=csv_data,
-            file_name="shl_submission.csv",
-            mime="text/csv"
-        )
+# ✅ Download button only appears when CSV exists
+if st.session_state.csv_data:
+    st.download_button(
+        label="Download Submission CSV",
+        data=st.session_state.csv_data,
+        file_name="shl_submission.csv",
+        mime="text/csv"
+    )
