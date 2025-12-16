@@ -30,21 +30,31 @@ if st.button("Recommend"):
             results = rerank(results, query)
             explanation = explain_recommendations(query, results)
 
-            # ✅ CSV created AND stored safely
-            csv_text = save_submission(query, results)
-            st.session_state.csv_data = (
-                csv_text.encode("utf-8") if csv_text else None
-            )
+            # 🔹 Convert results to TABULAR format (CRITICAL)
+            rows = []
+            for r in results:
+                rows.append({
+                    "Query": query,
+                    "Assessment_url": r.get("assessment_url") or r.get("url")
+                })
+
+            df = pd.DataFrame(rows)
+
+            # 🔹 Save CSV in memory
+            st.session_state.csv_data = df.to_csv(
+                index=False,
+                header=False   # SHL format: no header
+            ).encode("utf-8")
 
         st.success("Recommendations generated!")
 
-        st.subheader("Recommended Assessments")
-        for i, r in enumerate(results, 1):
-            st.markdown(f"**{i}. {r.get('name', 'Assessment')}**")
-            st.write(r.get("assessment_url", ""))
+        # 🔹 Show TABLE (SHL requirement)
+        st.subheader("Recommended Assessments (Tabular Format)")
+        st.dataframe(df, use_container_width=True)
 
         st.subheader("Why these assessments?")
         st.write(explanation)
+
 
 # ✅ Render download button ONLY if CSV exists
 if st.session_state.csv_data is not None:
